@@ -17,6 +17,19 @@ This test kit is split into three different types of bulk data export:
   - System Level Export: FHIR Operation to export data from a FHIR server,
     whether or not it is associated with a patient
 
+## Bulk Submit Preview
+
+The test kit also includes preliminary suites for the
+[Bulk Data Access v4.0.0 Submit specification](https://build.fhir.org/ig/HL7/bulk-data/branches/argo25/en/submit.html):
+
+- **Data Provider**: Inferno simulates a Data Consumer while the system under
+  test submits data and reports submission status.
+- **Data Consumer**: Inferno simulates a Data Provider while the system under
+  test accepts submissions and retrieves submitted data.
+
+These suites are previews with incomplete coverage and may change as support
+for the specification is expanded.
+
 The BulkData Access Test Kit is built using the [Inferno
 Framework](https://inferno-framework.github.io/).  The Inferno Framework is
 designed for reuse and aims to make it easier to build test kits for any

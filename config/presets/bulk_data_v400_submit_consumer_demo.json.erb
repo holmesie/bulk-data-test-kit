@@ -1,0 +1,65 @@
+{
+  "title": "Demo: Run Data Consumer Against Inferno Data Provider",
+  "id": "bulk_data_v400_submit_consumer_demo",
+  "test_suite_id": "bulk_data_v400_submit_consumer",
+  "inputs": [
+    {
+      "name": "consumer_fhir_base_url",
+      "value": "<%= Inferno::Application['base_url'] %>/custom/bulk_data_v400_submit_provider/fhir",
+      "_title": "Bulk Data Consumer Base FHIR URL",
+      "_description": "The URL Inferno should use as the base for the Data Consumer under test.",
+      "_type": "text",
+      "_optional": false
+    },
+    {
+      "name": "smart_auth_info",
+      "value": {
+        "client_id": "inferno_demo_provider_client_id"
+      },
+      "_title": "Bulk Submit Data Provider Client Credentials",
+      "_description": "Inferno will use these credentials when making requests to the Data Consumer under test.",
+      "_type": "auth_info",
+      "_optional": false,
+      "_options": {
+        "mode": "auth",
+        "components": [
+          {
+            "name": "requested_scopes",
+            "default": "system/bulk-submit"
+          },
+          {
+            "name": "auth_type",
+            "default": "backend_services",
+            "locked": "true"
+          },
+          {
+            "name": "use_discovery",
+            "locked": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "submission_id",
+      "value": "123",
+      "_title": "Submission ID",
+      "_description": "Set the submission ID that will be used for the submission flow.",
+      "_type": "text",
+      "_optional": false
+    },
+    {
+      "name": "consumer_client_id",
+      "value": "inferno_demo_consumer_client_id",
+      "_title": "Data Consumer Client ID",
+      "_description": "Client ID of the Bulk Submit Data Consumer system under test.\nIf no value is provided, the Inferno session id will be used.\n",
+      "_type": "text"
+    },
+    {
+      "name": "smart_jwk_set",
+      "value": "{\"keys\":[{\"kty\":\"EC\",\"crv\":\"P-384\",\"x\":\"JQKTsV6PT5Szf4QtDA1qrs0EJ1pbimQmM2SKvzOlIAqlph3h1OHmZ2i7MXahIF2C\",\"y\":\"bRWWQRJBgDa6CTgwofYrHjVGcO-A7WNEnu4oJA5OUJPPPpczgx1g2NsfinK-D2Rw\",\"use\":\"sig\",\"key_ops\":[\"verify\"],\"ext\":true,\"kid\":\"4b49a739d1eb115b3225f4cf9beb6d1b\",\"alg\":\"ES384\"},{\"kty\":\"RSA\",\"alg\":\"RS384\",\"n\":\"vjbIzTqiY8K8zApeNng5ekNNIxJfXAue9BjoMrZ9Qy9m7yIA-tf6muEupEXWhq70tC7vIGLqJJ4O8m7yiH8H2qklX2mCAMg3xG3nbykY2X7JXtW9P8VIdG0sAMt5aZQnUGCgSS3n0qaooGn2LUlTGIR88Qi-4Nrao9_3Ki3UCiICeCiAE224jGCg0OlQU6qj2gEB3o-DWJFlG_dz1y-Mxo5ivaeM0vWuodjDrp-aiabJcSF_dx26sdC9dZdBKXFDq0t19I9S9AyGpGDJwzGRtWHY6LsskNHLvo8Zb5AsJ9eRZKpnh30SYBZI9WHtzU85M9WQqdScR69Vyp-6Uhfbvw\",\"e\":\"AQAB\",\"use\":\"sig\",\"key_ops\":[\"verify\"],\"ext\":true,\"kid\":\"b41528b6f37a9500edb8a905a595bdd7\"}]}",
+      "_title": "Data Consumer JWKS",
+      "_description": "JWKS of the Data Consumer\n",
+      "_type": "text"
+    }
+  ]
+}

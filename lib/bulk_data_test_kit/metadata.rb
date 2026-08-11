@@ -8,8 +8,8 @@ module BulkDataTestKit
       bulk_data_v101
       bulk_data_v200
       bulk_data_v200_client
-      bulk_data_submit_draft_recipient
-      bulk_data_submit_draft_provider
+      bulk_data_v400_submit_provider
+      bulk_data_v400_submit_consumer
     ]
     tags ['Bulk Data']
     last_updated ::BulkDataTestKit::LAST_UPDATED
@@ -21,14 +21,15 @@ module BulkDataTestKit
         The Bulk Data Access Test Kit validates the conformance of a server
         implementation to a specified version of the
         [Bulk Data Access Implementation Guide](http://hl7.org/fhir/uv/bulkdata/).
-        This Test Kit currently includes tests for
+        This Test Kit currently includes export tests for
         [STU1](http://hl7.org/fhir/uv/bulkdata/STU1.0.1/) and
         [STU2](http://hl7.org/fhir/uv/bulkdata/STU2/) versions of this
-        implementation guide.
+        implementation guide, along with preliminary Bulk Submit tests for
+        Data Provider and Data Consumer implementations of v4.0.0.
 
         <!-- break -->
 
-        This test kit is split into three different types of bulk data export:
+        The export tests are split into three different types of bulk data export:
 
         - All Patients: FHIR Operation to obtain a detailed set of FHIR resources
           of diverse resource types pertaining to all patients
@@ -37,6 +38,10 @@ module BulkDataTestKit
           Group
         - System Level Export: FHIR Operation to export data from a FHIR server,
           whether or not it is associated with a patient
+
+        The preliminary v4.0.0 Bulk Submit tests are organized as separate
+        Data Provider and Data Consumer suites. These preview suites are
+        incomplete and may change as their coverage is expanded.
 
         The Bulk Data Access Test Kit is built using the
         [Inferno Framework](https://inferno-framework.github.io/). The Inferno

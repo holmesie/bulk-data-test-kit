@@ -1,0 +1,22 @@
+{
+  "title": "Demo: Run Data Provider Against Inferno Data Consumer",
+  "id": "bulk_data_v400_submit_provider_demo",
+  "test_suite_id": "bulk_data_v400_submit_provider",
+  "inputs": [
+    {
+      "name": "client_id",
+      "value": "inferno_demo_provider_client_id",
+      "_title": "Provider Client ID",
+      "_description": "Client ID of the Bulk Data Submit Provider system under test.\nIf no value is provided, the Inferno session id will be used.\n",
+      "_type": "text",
+      "_optional": true
+    },
+    {
+      "name": "smart_jwk_set",
+      "value": "{\"keys\":[{\"kty\":\"EC\",\"crv\":\"P-384\",\"x\":\"JQKTsV6PT5Szf4QtDA1qrs0EJ1pbimQmM2SKvzOlIAqlph3h1OHmZ2i7MXahIF2C\",\"y\":\"bRWWQRJBgDa6CTgwofYrHjVGcO-A7WNEnu4oJA5OUJPPPpczgx1g2NsfinK-D2Rw\",\"use\":\"sig\",\"key_ops\":[\"verify\"],\"ext\":true,\"kid\":\"4b49a739d1eb115b3225f4cf9beb6d1b\",\"alg\":\"ES384\"},{\"kty\":\"RSA\",\"alg\":\"RS384\",\"n\":\"vjbIzTqiY8K8zApeNng5ekNNIxJfXAue9BjoMrZ9Qy9m7yIA-tf6muEupEXWhq70tC7vIGLqJJ4O8m7yiH8H2qklX2mCAMg3xG3nbykY2X7JXtW9P8VIdG0sAMt5aZQnUGCgSS3n0qaooGn2LUlTGIR88Qi-4Nrao9_3Ki3UCiICeCiAE224jGCg0OlQU6qj2gEB3o-DWJFlG_dz1y-Mxo5ivaeM0vWuodjDrp-aiabJcSF_dx26sdC9dZdBKXFDq0t19I9S9AyGpGDJwzGRtWHY6LsskNHLvo8Zb5AsJ9eRZKpnh30SYBZI9WHtzU85M9WQqdScR69Vyp-6Uhfbvw\",\"e\":\"AQAB\",\"use\":\"sig\",\"key_ops\":[\"verify\"],\"ext\":true,\"kid\":\"b41528b6f37a9500edb8a905a595bdd7\"}]}",
+      "_title": "Provider JSON Web Key Set (JWKS)",
+      "_description": "The Bulk Data Submit Provider system's JSON Web Key Set\nincluding the key(s) Inferno will need to verify signatures on\ntoken requests made by the client. May be provided as either a\npublicly accessible url containing the JWKS, or the raw JWKS\nJSON.\n",
+      "_type": "textarea"
+    }
+  ]
+}
