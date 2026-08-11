@@ -4,7 +4,13 @@ module BulkDataTestKit
   class Metadata < Inferno::TestKit
     id :bulk_data_test_kit
     title 'Bulk Data Test Kit'
-    suite_ids %w[bulk_data_v101 bulk_data_v200 bulk_data_v200_client]
+    suite_ids %w[
+      bulk_data_v101
+      bulk_data_v200
+      bulk_data_v200_client
+      bulk_data_submit_draft_recipient
+      bulk_data_submit_draft_provider
+    ]
     tags ['Bulk Data']
     last_updated ::BulkDataTestKit::LAST_UPDATED
     version ::BulkDataTestKit::VERSION
