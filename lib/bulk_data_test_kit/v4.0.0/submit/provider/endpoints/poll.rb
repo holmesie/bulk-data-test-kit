@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'smart_app_launch_test_kit'
-require_relative '../jobs/retrieve_files'
+require_relative '../helpers'
 
 module BulkDataTestKit
   module BulkDataV400
@@ -16,60 +16,67 @@ module BulkDataTestKit
               return request.params[:session_path] if request.params[:session_path].present?
 
               SMARTAppLaunch::MockSMARTServer.issued_token_to_client_id(
-                request.headers['Authorization']&.delete_prefix('Bearer ')
+                request.headers['authorization']&.delete_prefix('Bearer ')
               )
-            end
-
-            def completed_file_download_requests
-              requests_repo.tagged_requests(test_run.test_session_id, [FILE_DOWNLOAD_TAG]).count
-            end
-
-            def file_count_to_download
-              manifest_requests =
-                requests_repo.tagged_requests(test_run.test_session_id, [MANIFEST_TAG])
-                  .map { |request| JSON.parse(request.response_body).deep_symbolize_keys }
-
-              manifest_requests.reduce(0) do |count, manifest|
-                count + manifest[:output].count
-              end
-            end
-
-            def done_downloading_files?
-              done = completed_file_download_requests
-              total = file_count_to_download
-              puts "#{done}/#{total}"
-
-              total.positive? && done >= total
-            end
-
-            def poll_request_count
-              requests_repo.tagged_requests(test_run.test_session_id, [POLL_TAG]).count
-            end
-
-            def kickoff_file_downloads
-              Inferno::Jobs.perform(
-                BulkDataTestKit::BulkDataV400::Submit::Provider::Jobs::RetrieveFiles,
-                test_run.test_session_id,
-                result.id
-              )
-            end
-
-            def update_result
-              results_repo.update(result.id, result: 'pass') if done_downloading_files?
             end
 
             def make_response
-              kickoff_file_downloads if poll_request_count.zero?
+              case submission_outcome[:status]
+              when 'succeeded'
+                make_completed_response
+              when 'failed'
+                make_error_response(500, submission_outcome[:diagnostic])
+              else
+                make_in_progress_response
+              end
+            end
 
-              response.status =
-                if done_downloading_files?
-                  200
-                else
-                  202
-                end
+            def submission_id
+              submission_outcome[:submission_id]
+            end
 
+            def submission_outcome
+              @submission_outcome ||= submission_outcomes
+                .fetch(request.params[:submission_key].to_s, {})
+                .deep_symbolize_keys
+            end
+
+            def submission_outcomes
+              raw_outcomes = Inferno::Repositories::SessionData.new.load(
+                test_session_id: test_run.test_session_id,
+                name: :provider_submission_outcomes
+              )
+
+              JSON.parse(raw_outcomes.presence || '{}')
+            rescue JSON::ParserError
+              {}
+            end
+
+            def make_in_progress_response
+              response.status = 202
+              response.headers['Retry-After'] = '1'
+            end
+
+            def make_completed_response
+              response.status = 200
               response.headers['Content-Type'] = 'application/json'
-              response.body = complete_manifest(request).to_json
+              response.body = complete_manifest(submission_id).to_json
+            end
+
+            def make_error_response(status, diagnostic)
+              operation_outcome = FHIR::R4::OperationOutcome.new(
+                issue: [
+                  FHIR::R4::OperationOutcome::Issue.new(
+                    severity: 'error',
+                    code: 'processing',
+                    diagnostics: diagnostic
+                  )
+                ]
+              )
+
+              response.status = status
+              response.headers['Content-Type'] = 'application/fhir+json'
+              response.body = operation_outcome.to_json
             end
 
             def tags

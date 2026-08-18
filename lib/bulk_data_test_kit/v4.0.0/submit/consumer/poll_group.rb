@@ -11,23 +11,14 @@ module BulkDataTestKit
           title 'Bulk Data Status Polling Request'
 
           description %(
-            This group verifies that a Data Consumer supports polling requests by a provider.
-
-            This group will:
-            1. Perform an initial status poll against the URL given by the Data Consumer during the status submission phase.
-            2. Waits until the user verifies that the reciever is finished processing all files.
+            This group verifies that a Data Consumer returns an in-progress response
+            to an initial status poll. Inferno sends the terminal `completed`
+            submission immediately after this group, then polls for the final result.
           )
 
           id :bulk_data_v400_submit_consumer_poll
 
           run_as_group
-
-          input :consumer_client_id,
-                title: 'Data Consumer Client ID',
-                description: <<~DESCRIPTION
-                  Client ID of the Bulk Submit Data Consumer system under test.
-                  If no value is provided, the Inferno session id will be used.
-                DESCRIPTION
 
           input :smart_jwk_set,
                 title: 'Data Consumer JSON Web Key Set (JWKS)',
@@ -47,7 +38,8 @@ module BulkDataTestKit
           input :poll_url
 
           http_client do
-            headers 'Authorization' => smart_auth_info.access_token
+            headers 'Authorization' => "Bearer #{smart_auth_info.access_token}",
+                    'Accept' => 'application/json'
           end
 
           test do
@@ -60,25 +52,12 @@ module BulkDataTestKit
             run do
               get poll_url
 
-              assert [200, 202].include?(response[:status]), 'Invalid response status.'
+              assert_response_status(202)
+              assert request.response_header('x-export-status').nil?,
+                     'The initial poll response included an unexpected `X-Export-Status` header.'
             end
           end
 
-          test do
-            title 'Wait For Processing'
-
-            run do
-              identifier = consumer_client_id || test_session_id
-
-              wait(
-                identifier: identifier,
-                message: %(
-                  When the Data Consumer under test has finished processing all submission files, [click here](#{resume_pass_url}?id=#{identifier}).
-                ),
-                timeout: 900
-              )
-            end
-          end
         end
       end
     end

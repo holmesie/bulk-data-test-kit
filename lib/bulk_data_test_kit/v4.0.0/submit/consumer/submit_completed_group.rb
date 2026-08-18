@@ -4,21 +4,21 @@ module BulkDataTestKit
   module BulkDataV400
     module Submit
       module Consumer
-        class SubmitCompleteGroup < Inferno::TestGroup
+        class SubmitCompletedGroup < Inferno::TestGroup
           include URLs
           include Helpers
 
-          title 'Bulk Submit Status Operation - Complete'
+          title 'Bulk Submit Operation - Completed'
 
           description %(
-            This group verifies that a submission with a status of `complete` can be made against the Data Consumer.
+            This group verifies that a submission with a status of `completed` can be made against the Data Consumer.
 
             This group will:
-            1. Using the provided base URL of the Data Consumer system under test, will perform the $bulk-submit operation with a `submissionStatus` of `complete`.
+            1. Using the provided base URL of the Data Consumer system under test, will perform the $bulk-submit operation with a `submissionStatus` of `completed`.
             2. Check that the response is valid.
           )
 
-          id :bulk_data_v400_submit_consumer_submit_complete
+          id :bulk_data_v400_submit_consumer_submit_completed
 
           run_as_group
 
@@ -28,14 +28,15 @@ module BulkDataTestKit
                 optional: false
 
           http_client do
-            headers 'Authorization' => smart_auth_info.access_token, 'Content-Type' => 'application/fhir+json'
+            headers 'Authorization' => "Bearer #{smart_auth_info.access_token}",
+                    'Content-Type' => 'application/fhir+json'
           end
 
           test do
-            title 'Submit Completion Status'
+            title 'Submit Completed Status'
 
             description %(
-              This test verifies that a submission with a status of `complete` can be made against the Data Consumer.
+              This test verifies that a submission with a status of `completed` can be made against the Data Consumer.
             )
 
             run do
@@ -43,7 +44,7 @@ module BulkDataTestKit
                 submit_parameters(
                   submission_id,
                   base_url,
-                  status: 'complete',
+                  status: 'completed',
                   oauth_metadata_url: smart_discovery_url
                 )
 

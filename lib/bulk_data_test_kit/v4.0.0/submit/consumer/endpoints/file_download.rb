@@ -14,16 +14,12 @@ module BulkDataTestKit
               return request.params[:session_path] if request.params[:session_path].present?
 
               SMARTAppLaunch::MockSMARTServer.issued_token_to_client_id(
-                request.headers['Authorization']&.delete_prefix('Bearer ')
+                request.headers['authorization']&.delete_prefix('Bearer ')
               )
             end
 
             def file_contents
-              '{"resourceType": "Patient"}'
-            end
-
-            def update_result
-              results_repo.update(result.id, result: 'pass')
+              "{\"resourceType\": \"Patient\"}\n"
             end
 
             def make_response

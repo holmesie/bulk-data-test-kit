@@ -8,7 +8,7 @@ module BulkDataTestKit
         FHIR_BASE_ROUTE = '/fhir'
         SUBMIT_ROUTE = "#{FHIR_BASE_ROUTE}/$bulk-submit".freeze
         STATUS_SUBMIT_ROUTE = "#{FHIR_BASE_ROUTE}/$bulk-submit-status".freeze
-        POLL_ROUTE = "#{FHIR_BASE_ROUTE}/status".freeze
+        POLL_ROUTE = "#{FHIR_BASE_ROUTE}/status/:submission_key".freeze
         SMART_DISCOVERY_ROUTE = "#{FHIR_BASE_ROUTE}/.well-known/smart-configuration".freeze
         AUTH_SERVER_ROUTE= '/auth'
         SMART_TOKEN_ROUTE = "#{AUTH_SERVER_ROUTE}/token".freeze
@@ -35,8 +35,8 @@ module BulkDataTestKit
             "#{base_url}#{STATUS_SUBMIT_ROUTE}"
           end
 
-          def poll_url
-            "#{base_url}#{POLL_ROUTE}"
+          def poll_url(submission_key = ':submission_key')
+            "#{base_url}#{POLL_ROUTE.sub(':submission_key', submission_key)}"
           end
 
           def smart_discovery_url

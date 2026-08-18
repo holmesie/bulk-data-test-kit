@@ -15,6 +15,8 @@ module BulkDataTestKit
 
           run_as_group
 
+          optional
+
           test do
             title 'Poll Request Was Made'
 

@@ -10,9 +10,10 @@ require_relative 'endpoints/poll'
 require_relative 'client_registration_group'
 require_relative 'manifest_and_file_retrieval'
 require_relative 'poll_group'
+require_relative 'processing_wait_group'
 require_relative 'wait_group'
 require_relative 'submit_group'
-require_relative 'submit_aborted_group'
+require_relative 'submit_stopped_group'
 require_relative 'status_submit_group'
 
 module BulkDataTestKit
@@ -100,8 +101,8 @@ module BulkDataTestKit
             group from: :bulk_data_v400_submit_provider_wait
             group from: :bulk_data_v400_submit_provider_submit
             group from: :bulk_data_v400_submit_provider_status_submit
+            group from: :bulk_data_v400_submit_provider_processing_wait
             group from: :bulk_data_v400_submit_provider_poll
-            group from: :bulk_data_v400_submit_provider_submit_aborted
 
             group from: :bulk_data_v400_submit_provider_manifest_file_retrieval
           end

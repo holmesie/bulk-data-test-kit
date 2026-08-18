@@ -1,15 +1,19 @@
 # frozen_string_literal: true
 
+require_relative '../shared/submission_status'
+
 module BulkDataTestKit
   module BulkDataV400
     module Submit
       module Provider
         class SubmitGroup < Inferno::TestGroup
+          include Helpers
+
           title 'Bulk Submit Operation'
 
           description %(
             This group verifies that a provider successfully made at least one
-            valid complete submission.
+            valid completed submission.
           )
 
           id :bulk_data_v400_submit_provider_submit
@@ -27,18 +31,8 @@ module BulkDataTestKit
 
             run do
               submissions = load_tagged_requests(SUBMIT_TAG)
-              found_in_progress = false
-              submissions.each do |request|
-                parameters = FHIR.from_contents(request.request_body)
-                status_parameters = parameters.parameter.filter do |parameter|
-                  parameter.name == 'submissionStatus'
-                end
-
-                found_in_progress = true if status_parameters.empty?
-
-                status_parameters.each do |status_parameter|
-                  found_in_progress = true if status_parameter.valueCoding.code == 'in-progress'
-                end
+              found_in_progress = submissions.any? do |request|
+                request_has_submission_status?(request, 'in-progress')
               end
 
               skip_if !found_in_progress, 'An `in-progress` submission was not detected.'
@@ -46,46 +40,37 @@ module BulkDataTestKit
           end
 
           test do
-            title 'Complete Submit Request Was Made'
+            title 'Completed Submit Request Was Made'
 
             description %(
-              This test verifies that at least one `complete` submit request was made.
+              This test verifies that at least one `completed` submit request was made.
             )
 
             run do
               submissions = load_tagged_requests(SUBMIT_TAG)
-              found_complete = false
-              submissions.each do |request|
-                parameters = FHIR.from_contents(request.request_body)
-                status_parameters = parameters.parameter.filter do |parameter|
-                  parameter.name == 'submissionStatus'
-                end
-                status_parameters.each do |status_parameter|
-                  found_complete = true if status_parameter.valueCoding.code == 'complete'
-                end
+              found_completed = submissions.any? do |request|
+                request_has_submission_status?(request, 'completed')
               end
 
-              assert found_complete, 'A `complete` submission was not detected.'
+              assert found_completed, 'A `completed` submission was not detected.'
             end
           end
 
           test do
-            title 'Required Submitter Identifier Provided via `submitter`'
+            title '`submitter` Identifier Is Valid and Consistent'
 
             description %(
-              This test verifies that a submission included the required submitter parameter.
+              This test verifies that every submission includes exactly one
+              populated `submitter` Identifier and uses the same Identifier
+              throughout the submission.
             )
 
             run do
               submissions = load_tagged_requests(SUBMIT_TAG)
-              with_requirement = submissions.filter do |request|
-                parameters = FHIR.from_contents(request.request_body)
-                parameters.parameter.any? do |parameter|
-                  parameter.name == 'submitter'
-                end
-              end
-
-              assert with_requirement.any?, 'No submission included the required submitter parameter `submitter`'
+              validate_submitter_identifiers(
+                submissions,
+                '$bulk-submit'
+              )
             end
           end
 
@@ -93,85 +78,73 @@ module BulkDataTestKit
             title 'Required Submission ID Provided via `submissionId`'
 
             description %(
-              This test verifies that a submission included the required submission ID parameter.
+              This test verifies that every submission request includes exactly one
+              populated `submissionId` string parameter.
             )
 
             run do
               submissions = load_tagged_requests(SUBMIT_TAG)
-              with_requirement = submissions.filter do |request|
-                parameters = FHIR.from_contents(request.request_body)
-                parameters.parameter.any? do |parameter|
-                  parameter.name == 'submissionId'
-                end
-              end
-
-              assert with_requirement.any?, 'No submission included the required submission ID parameter `submissionId`'
+              validate_submission_ids(submissions, '$bulk-submit')
             end
           end
 
           test do
-            title 'Recieved `submissionStatus` has a valid code'
+            title 'Received `submissionStatus` has a valid Coding'
 
             description %(
-              This test verifies that when a `submissionStatus` is included, it is valid.
+              This test verifies that when a `submissionStatus` is included, its system and code are valid.
             )
 
             run do
               submissions = load_tagged_requests(SUBMIT_TAG)
-              submissions.each do |request|
-                parameters = FHIR.from_contents(request.request_body)
-                status_parameters = parameters.parameter.filter do |parameter|
-                  parameter.name == 'submissionStatus' && !parameter.valueCoding.nil?
-                end
-                status_parameters.each do |status_parameter|
-                  assert %w[in-progress complete aborted].include?(status_parameter.valueCoding.code),
-                         "#{status_parameter.valueCoding.code} is not a valid submissionStatus code"
-                end
-              end
+              validate_submission_statuses(submissions)
             end
           end
 
           test do
-            title 'Submission Provided optional `manifestUrl` with type `string`'
+            title 'Submission Provided optional `manifestUrl` with type `url`'
 
             description %(
-              This test verifies that a submission included the optional `manifestUrl` parameter, and had type `string`.
+              This test verifies that a submission included the optional `manifestUrl` parameter, and had type `url`.
             )
 
             optional
 
             run do
               submissions = load_tagged_requests(SUBMIT_TAG)
-              with_requirement = submissions.filter do |request|
-                parameters = FHIR.from_contents(request.request_body)
-                parameters.parameter.any? do |parameter|
-                  parameter.name == 'manifestUrl' && !parameter.valueString.nil?
-                end
+              manifest_url_parameters = submissions.flat_map do |request|
+                FHIR.from_contents(request.request_body).parameter
+              end.select do |parameter|
+                parameter.name == 'manifestUrl'
               end
 
-              skip_if !with_requirement.any?, 'No submission included the optional `manifestUrl` parameter'
+              skip_if manifest_url_parameters.empty?, 'No submission included the optional `manifestUrl` parameter'
+              assert manifest_url_parameters.all? { |parameter| !parameter.valueUrl.nil? },
+                     '`manifestUrl` must have type `url`'
             end
           end
 
           test do
-            title 'Submission Provided optional `replacesManifestUrl` with type `string`'
+            title 'Submission Provided optional `replacesManifestUrl` with type `url`'
 
             description %(
-              This test verifies that a submission included the optional `replacesManifestUrl` parameter, and had type `string`.
+              This test verifies that a submission included the optional `replacesManifestUrl` parameter, and had type `url`.
             )
 
             optional
 
             run do
               submissions = load_tagged_requests(SUBMIT_TAG)
-              with_requirement = submissions.filter do |request|
-                parameters = FHIR.from_contents(request.request_body)
-                parameters.parameter.any? do |parameter|
-                  parameter.name == 'replacesManifestUrl' && !parameter.valueString.nil?
-                end
+              replaces_manifest_url_parameters = submissions.flat_map do |request|
+                FHIR.from_contents(request.request_body).parameter
+              end.select do |parameter|
+                parameter.name == 'replacesManifestUrl'
               end
 
-              skip_if !with_requirement.any?, 'No submission included the optional `replacesManifestUrl` parameter'
+              skip_if replaces_manifest_url_parameters.empty?,
+                      'No submission included the optional `replacesManifestUrl` parameter'
+              assert replaces_manifest_url_parameters.all? { |parameter| !parameter.valueUrl.nil? },
+                     '`replacesManifestUrl` must have type `url`'
             end
           end
 
@@ -186,36 +159,39 @@ module BulkDataTestKit
 
             run do
               submissions = load_tagged_requests(SUBMIT_TAG)
-              with_requirement = submissions.filter do |request|
-                parameters = FHIR.from_contents(request.request_body)
-                parameters.parameter.any? do |parameter|
-                  parameter.name == 'outputFormat' && !parameter.valueString.nil?
-                end
+              output_format_parameters = submissions.flat_map do |request|
+                FHIR.from_contents(request.request_body).parameter
+              end.select do |parameter|
+                parameter.name == 'outputFormat'
               end
 
-              skip_if !with_requirement.any?, 'No submission included the optional `outputFormat` parameter'
+              skip_if output_format_parameters.empty?,
+                      'No submission included the optional `outputFormat` parameter'
+              assert output_format_parameters.all? { |parameter| !parameter.valueString.nil? },
+                     '`outputFormat` must have type `string`'
             end
           end
 
           test do
-            title 'Submission Provided optional `fhirBaseUrl` with type `string`'
+            title 'Submission Provided optional `fhirBaseUrl` with type `url`'
 
             description %(
-              This test verifies that a submission included the optional `fhirBaseUrl` parameter, and had type `string`.
+              This test verifies that a submission included the optional `fhirBaseUrl` parameter, and had type `url`.
             )
 
             optional
 
             run do
               submissions = load_tagged_requests(SUBMIT_TAG)
-              with_requirement = submissions.filter do |request|
-                parameters = FHIR.from_contents(request.request_body)
-                parameters.parameter.any? do |parameter|
-                  parameter.name == 'fhirBaseUrl' && !parameter.valueString.nil?
-                end
+              fhir_base_url_parameters = submissions.flat_map do |request|
+                FHIR.from_contents(request.request_body).parameter
+              end.select do |parameter|
+                parameter.name == 'fhirBaseUrl'
               end
 
-              skip_if !with_requirement.any?, 'No submission included the optional `fhirBaseUrl` parameter'
+              skip_if fhir_base_url_parameters.empty?, 'No submission included the optional `fhirBaseUrl` parameter'
+              assert fhir_base_url_parameters.all? { |parameter| !parameter.valueUrl.nil? },
+                     '`fhirBaseUrl` must have type `url`'
             end
           end
 
@@ -230,36 +206,31 @@ module BulkDataTestKit
 
             run do
               submissions = load_tagged_requests(SUBMIT_TAG)
-              with_requirement = submissions.filter do |request|
-                parameters = FHIR.from_contents(request.request_body)
-                parameters.parameter.any? do |parameter|
-                  parameter.name == 'fileRequestHeader' && !parameter.part.nil?
-                end
-              end
-
-              skip_if !with_requirement.any?, 'No submission included the optional `fileRequestHeader` parameter'
+              validate_optional_part_parameter(submissions, 'fileRequestHeader')
             end
           end
 
           test do
-            title 'Submission Provided optional `oauthMetadataUrl` with type `string`'
+            title 'Submission Provided optional `oauthMetadataUrl` with type `url`'
 
             description %(
-              This test verifies that a submission included the optional `oauthMetadataUrl` parameter, and had type `string`.
+              This test verifies that a submission included the optional `oauthMetadataUrl` parameter, and had type `url`.
             )
 
             optional
 
             run do
               submissions = load_tagged_requests(SUBMIT_TAG)
-              with_requirement = submissions.filter do |request|
-                parameters = FHIR.from_contents(request.request_body)
-                parameters.parameter.any? do |parameter|
-                  parameter.name == 'oauthMetadataUrl' && !parameter.valueString.nil?
-                end
+              oauth_metadata_url_parameters = submissions.flat_map do |request|
+                FHIR.from_contents(request.request_body).parameter
+              end.select do |parameter|
+                parameter.name == 'oauthMetadataUrl'
               end
 
-              skip_if !with_requirement.any?, 'No submission included the optional `oauthMetadataUrl` parameter'
+              skip_if oauth_metadata_url_parameters.empty?,
+                      'No submission included the optional `oauthMetadataUrl` parameter'
+              assert oauth_metadata_url_parameters.all? { |parameter| !parameter.valueUrl.nil? },
+                     '`oauthMetadataUrl` must have type `url`'
             end
           end
 
@@ -274,14 +245,7 @@ module BulkDataTestKit
 
             run do
               submissions = load_tagged_requests(SUBMIT_TAG)
-              with_requirement = submissions.filter do |request|
-                parameters = FHIR.from_contents(request.request_body)
-                parameters.parameter.any? do |parameter|
-                  parameter.name == 'fileEncryptionKey' && !parameter.part.nil?
-                end
-              end
-
-              skip_if !with_requirement.any?, 'No submission included the optional `fileEncryptionKey` parameter'
+              validate_optional_part_parameter(submissions, 'fileEncryptionKey')
             end
           end
 
@@ -296,14 +260,7 @@ module BulkDataTestKit
 
             run do
               submissions = load_tagged_requests(SUBMIT_TAG)
-              with_requirement = submissions.filter do |request|
-                parameters = FHIR.from_contents(request.request_body)
-                parameters.parameter.any? do |parameter|
-                  parameter.name == 'metadata' && !parameter.part.nil?
-                end
-              end
-
-              skip_if !with_requirement.any?, 'No submission included the optional `metadata` parameter'
+              validate_optional_part_parameter(submissions, 'metadata')
             end
           end
 
@@ -318,14 +275,21 @@ module BulkDataTestKit
 
             run do
               submissions = load_tagged_requests(SUBMIT_TAG)
-              with_requirement = submissions.filter do |request|
-                parameters = FHIR.from_contents(request.request_body)
-                parameters.parameter.any? do |parameter|
-                  parameter.name == 'import' && !parameter.part.nil?
-                end
-              end
+              validate_optional_part_parameter(submissions, 'import')
+            end
+          end
 
-              skip_if !with_requirement.any?, 'No submission included the optional `import` parameter'
+          test do
+            title 'No Requests Follow a Terminal Submission Status'
+
+            description %(
+              This test verifies that no additional `$bulk-submit` request was
+              made for a submission after it was marked `completed` or `stopped`.
+            )
+
+            run do
+              submissions = load_tagged_requests(SUBMIT_TAG)
+              validate_terminal_submission_order(submissions)
             end
           end
         end

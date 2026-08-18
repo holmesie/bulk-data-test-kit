@@ -36,30 +36,10 @@ see how the tests work:
    Submit - Data Consumer (Preview) suite.
 1. Select the "Demo: Run Data Consumer Against Inferno Data Provider" preset.
 1. Click the "Run All Tests" button.
-1. Click the link in the modal to indicate that the workflow has completed.
-1. In the provider suite session, click the link in the modal to indicate that
-   the workflow has completed.
-
-### Known Limitations
-
-This test suite is in a very early state, and a lot of functionality is missing
-or incomplete.
-
-* Submit Operation
-  * Unsupported Parameters - The test suite does not test the following
-    parameters as part of its submissions
-    * `aborted` status
-    * `replacesManifestUrl`
-    * `outputFormat`
-    * `fileRequestHeader`
-    * `fileEncryptionKey`
-  * Only supports SMART Backend Services authorization
-* File Downloads
-  * Additional request headers and file encryption are not supported
-* Request Validation
-  * The tests which verify that requests for an access token, manifests, and
-    files are made are currently just placeholders. They verify that requests
-    were made, but do not perform any validation of the content of the requests.
-* Some use cases may require the ability to include resources conforming to
-  specific profiles in the submission. This would likely require the ability for
-  users to provide the data to be submitted as inputs.
+1. When the Data Consumer suite pauses after sending `completed`, advance the
+   Data Provider suite from its initial wait.
+1. The Data Provider suite will retrieve the manifest and file synchronously,
+   then pause while waiting for the final status poll.
+1. Advance the Data Consumer suite. It will make one final status poll.
+1. After that poll completes, advance the Data Provider suite to finish the
+   paired workflow.

@@ -10,8 +10,9 @@ require_relative 'endpoints/file_download'
 require_relative 'endpoints/manifest'
 require_relative 'manifest_and_file_retrieval'
 require_relative 'poll_group'
+require_relative 'processing_wait_group'
 require_relative 'submit_group'
-require_relative 'submit_complete_group'
+require_relative 'submit_completed_group'
 require_relative 'status_submit_group'
 
 module BulkDataTestKit
@@ -93,7 +94,8 @@ module BulkDataTestKit
             group from: :bulk_data_v400_submit_consumer_submit
             group from: :bulk_data_v400_submit_consumer_status_submit
             group from: :bulk_data_v400_submit_consumer_poll
-            group from: :bulk_data_v400_submit_consumer_submit_complete
+            group from: :bulk_data_v400_submit_consumer_submit_completed
+            group from: :bulk_data_v400_submit_consumer_processing_wait
             group from: :bulk_data_v400_submit_consumer_poll_complete
 
             group from: :bulk_data_v400_submit_consumer_manifest_file_retrieval

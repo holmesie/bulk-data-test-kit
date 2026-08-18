@@ -20,6 +20,8 @@ module BulkDataTestKit
           test do
             title 'Wait For Submit Sequence'
 
+            output :provider_submission_outcomes, type: :textarea
+
             input :client_id,
                   title: 'Client Id',
                   type: 'text',
@@ -28,8 +30,11 @@ module BulkDataTestKit
                   description: SMARTAppLaunch::INPUT_CLIENT_ID_DESCRIPTION_LOCKED
 
             run do
+              output provider_submission_outcomes: '{}'
+              identifier = client_id.presence || test_session_id
+
               wait(
-                identifier: client_id,
+                identifier:,
                 message: %(
                   This test will wait and capture all requests made while the tester performs a bulk data submit
                   operation (as a Data Provider) against the provided endpoint(s).
@@ -43,15 +48,17 @@ module BulkDataTestKit
 
                   #{submit_url}
 
-                  Use client id `#{client_id}` to obtain a backend services access token from the SMART authorization
+                  Use client id `#{identifier}` to obtain a backend services access token from the SMART authorization
                   server for this FHIR server and include the access token on all subsequent requests.
 
-                  After the submit is made, the tester should proceed through the rest of the bulk submit sequence.
+                  Send all requests for each submission through the terminal
+                  `completed` request, then use the link below to allow Inferno
+                  to retrieve every completed submission.
 
                   The entire request sequence will be recorded and verified to check conformance to the
                   [Bulk Data Access v4.0.0 Submit specification](https://build.fhir.org/ig/HL7/bulk-data/branches/argo25/en/submit.html).
 
-                  [Click here](#{resume_pass_url}?id=#{client_id}) when finished.
+                  [Click here](#{resume_pass_url}?id=#{identifier}) when finished.
                 ),
                 timeout: 900
               )

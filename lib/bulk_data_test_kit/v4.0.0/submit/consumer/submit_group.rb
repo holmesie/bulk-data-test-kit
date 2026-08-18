@@ -28,7 +28,8 @@ module BulkDataTestKit
                 optional: false
 
           http_client do
-            headers 'Authorization' => smart_auth_info.access_token, 'Content-Type' => 'application/fhir+json'
+            headers 'Authorization' => "Bearer #{smart_auth_info.access_token}",
+                    'Content-Type' => 'application/fhir+json'
           end
 
           test do
@@ -43,7 +44,7 @@ module BulkDataTestKit
                 submit_parameters(
                   submission_id,
                   base_url,
-                  status: 'complete',
+                  status: 'in-progress',
                   manifest_url: manifest_url,
                   oauth_metadata_url: smart_discovery_url
                 )

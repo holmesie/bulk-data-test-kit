@@ -5,6 +5,8 @@ module BulkDataTestKit
     module Submit
       module Provider
         class StatusSubmitGroup < Inferno::TestGroup
+          include Helpers
+
           title 'Bulk Submit Status Operation'
 
           description %(
@@ -14,6 +16,8 @@ module BulkDataTestKit
           id :bulk_data_v400_submit_provider_status_submit
 
           run_as_group
+
+          optional
 
           test do
             title 'Status Submit Request Was Made'
@@ -28,22 +32,19 @@ module BulkDataTestKit
           end
 
           test do
-            title 'Submitter Identifier Provided via `submitter`'
+            title '`submitter` and `submissionId` Match Submission'
 
             description %(
-              This test verifies that a submission included the required submitter parameter.
+              This test verifies that every status submission includes exactly one
+              populated `submitter` Identifier and `submissionId`, and that the
+              combination matches a submit request.
             )
 
             run do
-              submissions = load_tagged_requests(STATUS_SUBMIT_TAG)
-              with_requirement = submissions.filter do |request|
-                parameters = FHIR.from_contents(request.request_body)
-                parameters.parameter.any? do |parameter|
-                  parameter.name == 'submitter'
-                end
-              end
-
-              assert with_requirement.any?, 'No submission included the required submitter parameter `submitter`'
+              validate_status_submission_identities(
+                load_tagged_requests(STATUS_SUBMIT_TAG),
+                load_tagged_requests(SUBMIT_TAG)
+              )
             end
           end
 
@@ -51,19 +52,13 @@ module BulkDataTestKit
             title 'Submission ID Provided via `submissionId`'
 
             description %(
-              This test verifies that a submission included the required submission ID parameter.
+              This test verifies that every status request includes exactly one
+              populated `submissionId` string parameter.
             )
 
             run do
               submissions = load_tagged_requests(STATUS_SUBMIT_TAG)
-              with_requirement = submissions.filter do |request|
-                parameters = FHIR.from_contents(request.request_body)
-                parameters.parameter.any? do |parameter|
-                  parameter.name == 'submissionId'
-                end
-              end
-
-              assert with_requirement.any?, 'No submission included the required submission ID parameter `submissionId`'
+              validate_submission_ids(submissions, '$bulk-submit-status')
             end
           end
 
@@ -78,14 +73,16 @@ module BulkDataTestKit
 
             run do
               submissions = load_tagged_requests(STATUS_SUBMIT_TAG)
-              with_requirement = submissions.filter do |request|
-                parameters = FHIR.from_contents(request.request_body)
-                parameters.parameter.any? do |parameter|
-                  parameter.name == '_outputFormat' && !parameter.valueString.nil?
-                end
+              output_format_parameters = submissions.flat_map do |request|
+                FHIR.from_contents(request.request_body).parameter
+              end.select do |parameter|
+                parameter.name == '_outputFormat'
               end
 
-              assert with_requirement.any?, 'No submission included the optional `_outputFormat` parameter'
+              skip_if output_format_parameters.empty?,
+                      'No submission included the optional `_outputFormat` parameter'
+              assert output_format_parameters.all? { |parameter| !parameter.valueString.nil? },
+                     '`_outputFormat` must have type `string`'
             end
           end
         end

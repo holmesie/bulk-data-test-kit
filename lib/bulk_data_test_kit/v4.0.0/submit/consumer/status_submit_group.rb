@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'uri'
+
 module BulkDataTestKit
   module BulkDataV400
     module Submit
@@ -30,7 +32,8 @@ module BulkDataTestKit
           output :poll_url
 
           http_client do
-            headers 'Authorization' => smart_auth_info.access_token, 'Content-Type' => 'application/fhir+json'
+            headers 'Authorization' => "Bearer #{smart_auth_info.access_token}",
+                    'Content-Type' => 'application/fhir+json'
           end
 
           test do
@@ -40,13 +43,8 @@ module BulkDataTestKit
               This test verifies that a status submission can be made against the Data Consumer.
             )
 
-            # TODO: these parameters shouldn't include base url
             run do
-              parameters =
-                submit_parameters(
-                  submission_id,
-                  base_url
-                )
+              parameters = status_parameters(submission_id)
 
               post "#{consumer_fhir_base_url}/$bulk-submit-status",
                    body: parameters.to_json,
@@ -55,9 +53,21 @@ module BulkDataTestKit
                      'Prefer' => 'respond-async'
                    }
 
-              output poll_url: request.response_header('content-location')&.value
-
               assert_response_status(202)
+
+              poll_url = request.response_header('content-location')&.value
+              assert poll_url.present?, 'Status response headers did not include "Content-Location".'
+
+              begin
+                parsed_poll_url = URI.parse(poll_url)
+              rescue URI::InvalidURIError
+                assert false, '"Content-Location" must be an absolute HTTP(S) URL.'
+              end
+
+              assert %w[http https].include?(parsed_poll_url.scheme&.downcase) && parsed_poll_url.host.present?,
+                     '"Content-Location" must be an absolute HTTP(S) URL.'
+
+              output poll_url:
             end
           end
         end

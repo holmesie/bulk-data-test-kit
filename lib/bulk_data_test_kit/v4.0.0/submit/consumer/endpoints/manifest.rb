@@ -14,7 +14,7 @@ module BulkDataTestKit
               return request.params[:session_path] if request.params[:session_path].present?
 
               SMARTAppLaunch::MockSMARTServer.issued_token_to_client_id(
-                request.headers['Authorization']&.delete_prefix('Bearer ')
+                request.headers['authorization']&.delete_prefix('Bearer ')
               )
             end
 
@@ -29,15 +29,13 @@ module BulkDataTestKit
             def manifest
               {
                 transactionTime: DateTime.now,
-                request: manifest_url,
                 requiresAccessToken: true,
                 output: [
                   {
                     type: 'Patient',
                     url: download_url
                   }
-                ],
-                error: []
+                ]
               }
             end
 
