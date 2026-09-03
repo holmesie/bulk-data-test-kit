@@ -29,6 +29,15 @@ module BulkDataTestKit
 
           id :bulk_data_v400_submit_consumer
 
+          requirement_sets(
+            {
+              identifier: 'hl7.fhir.uv.smart-app-launch_2.2.0',
+              title: 'SMART App Launch',
+              actor: 'Server',
+              requirements: '30,251,253-256,258,372-374,377,381-383,385,393,394'
+            }
+          )
+
           links [
             {
               label: 'Report Issue',
