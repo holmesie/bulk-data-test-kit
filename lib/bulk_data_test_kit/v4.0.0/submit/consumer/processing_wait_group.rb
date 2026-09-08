@@ -28,6 +28,7 @@ module BulkDataTestKit
                 DESCRIPTION
 
           test do
+            id :bulk_data_v400_submit_consumer_processing_wait_test
             title 'Wait For Data Consumer Processing'
 
             run do

@@ -18,6 +18,7 @@ module BulkDataTestKit
           run_as_group
 
           test do
+            id :bulk_data_v400_submit_provider_wait_for_requests
             title 'Wait For Submit Sequence'
 
             output :provider_submission_outcomes, type: :textarea

@@ -20,6 +20,7 @@ module BulkDataTestKit
           optional
 
           test do
+            id :bulk_data_v400_submit_provider_stopped_submit
             title 'Stopped Submit Request Was Made'
 
             description %(

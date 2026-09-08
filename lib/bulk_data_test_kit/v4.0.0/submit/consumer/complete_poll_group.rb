@@ -31,6 +31,7 @@ module BulkDataTestKit
           end
 
           test do
+            id :bulk_data_v400_submit_consumer_complete_poll_status
             title 'Complete Poll Status'
 
             description %(
@@ -55,6 +56,7 @@ module BulkDataTestKit
           end
 
           test do
+            id :bulk_data_v400_submit_consumer_complete_poll_response
             title 'Status Response After Completion Is Valid'
 
             description %(

@@ -9,6 +9,7 @@ module BulkDataTestKit
           id :bulk_data_v400_submit_consumer_manifest_file_retrieval
 
           test do
+            id :bulk_data_v400_submit_consumer_token_request
             title 'Token request received'
             description <<~DESCRIPTION
               This test verifies that the Data Consumer requested an access
@@ -23,6 +24,7 @@ module BulkDataTestKit
           end
 
           test do
+            id :bulk_data_v400_submit_consumer_manifests_retrieved
             title 'Manifests retrieved'
             description <<~DESCRIPTION
               This test verifies that all manifests included in the manifest
@@ -37,6 +39,7 @@ module BulkDataTestKit
           end
 
           test do
+            id :bulk_data_v400_submit_consumer_files_retrieved
             title 'Files retrieved'
             description <<~DESCRIPTION
               This test verifies that all files included in the manifest

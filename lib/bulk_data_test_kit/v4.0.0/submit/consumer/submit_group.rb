@@ -33,6 +33,7 @@ module BulkDataTestKit
           end
 
           test do
+            id :bulk_data_v400_submit_consumer_manifest_url_submit
             title 'Submit Manifest URL'
 
             description %(

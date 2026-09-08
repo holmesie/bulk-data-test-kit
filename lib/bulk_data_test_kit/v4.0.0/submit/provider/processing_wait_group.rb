@@ -29,6 +29,7 @@ module BulkDataTestKit
                 description: SMARTAppLaunch::INPUT_CLIENT_ID_DESCRIPTION_LOCKED
 
           test do
+            id :bulk_data_v400_submit_provider_retrieve_submissions
             include Helpers
             include Retrieval
 

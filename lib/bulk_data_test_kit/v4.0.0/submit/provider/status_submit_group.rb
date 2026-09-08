@@ -20,6 +20,7 @@ module BulkDataTestKit
           optional
 
           test do
+            id :bulk_data_v400_submit_provider_status_submit_request
             title 'Status Submit Request Was Made'
 
             description %(
@@ -32,6 +33,7 @@ module BulkDataTestKit
           end
 
           test do
+            id :bulk_data_v400_submit_provider_status_submit_identity
             title '`submitter` and `submissionId` Match Submission'
 
             description %(
@@ -49,6 +51,7 @@ module BulkDataTestKit
           end
 
           test do
+            id :bulk_data_v400_submit_provider_status_submit_submission_id
             title 'Submission ID Provided via `submissionId`'
 
             description %(
@@ -63,6 +66,7 @@ module BulkDataTestKit
           end
 
           test do
+            id :bulk_data_v400_submit_provider_status_submit_output_format
             title 'Submission Provided optional `_outputFormat` with type `string`'
 
             description %(

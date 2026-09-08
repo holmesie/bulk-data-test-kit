@@ -37,6 +37,7 @@ module BulkDataTestKit
           end
 
           test do
+            id :bulk_data_v400_submit_consumer_status_submit_request
             title 'Status Submit'
 
             description %(

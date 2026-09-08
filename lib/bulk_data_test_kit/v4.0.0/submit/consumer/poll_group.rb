@@ -43,6 +43,7 @@ module BulkDataTestKit
           end
 
           test do
+            id :bulk_data_v400_submit_consumer_initial_poll_status
             title 'Initial Poll Status'
 
             description %(

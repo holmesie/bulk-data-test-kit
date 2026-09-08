@@ -13,6 +13,7 @@ module BulkDataTestKit
           input :provider_submission_outcomes, type: :textarea, optional: true
 
           test do
+            id :bulk_data_v400_submit_provider_completed_submissions_processed
             title 'Completed submissions were processed successfully'
             description <<~DESCRIPTION
               This test verifies that Inferno successfully retrieved every
@@ -29,6 +30,7 @@ module BulkDataTestKit
           end
 
           test do
+            id :bulk_data_v400_submit_provider_oauth_metadata_retrieved
             title 'OAuth metadata retrieved'
             description <<~DESCRIPTION
               This test verifies that the provider's OAuth metadata could be
@@ -62,6 +64,7 @@ module BulkDataTestKit
           end
 
           test do
+            id :bulk_data_v400_submit_provider_token_request_success
             title 'Successful token request made'
             description <<~DESCRIPTION
               This test verifies that all files included in the manifest
@@ -95,6 +98,7 @@ module BulkDataTestKit
           end
 
           test do
+            id :bulk_data_v400_submit_provider_manifests_retrieved
             title 'Manifests for each submission were retrieved'
             description <<~DESCRIPTION
               This test verifies that all manifests included in the submissions
@@ -125,6 +129,7 @@ module BulkDataTestKit
           end
 
           test do
+            id :bulk_data_v400_submit_provider_files_retrieved
             title 'Files retrieved'
             description <<~DESCRIPTION
               This test verifies that all files included in the manifest

@@ -21,6 +21,7 @@ module BulkDataTestKit
           run_as_group
 
           test do
+            id :bulk_data_v400_submit_provider_in_progress_submit
             title 'In-Progress Submit Request Was Made'
 
             description %(
@@ -40,6 +41,7 @@ module BulkDataTestKit
           end
 
           test do
+            id :bulk_data_v400_submit_provider_completed_submit
             title 'Completed Submit Request Was Made'
 
             description %(
@@ -57,6 +59,7 @@ module BulkDataTestKit
           end
 
           test do
+            id :bulk_data_v400_submit_provider_submitter_identifier
             title '`submitter` Identifier Is Valid and Consistent'
 
             description %(
@@ -75,6 +78,7 @@ module BulkDataTestKit
           end
 
           test do
+            id :bulk_data_v400_submit_provider_submission_id
             title 'Required Submission ID Provided via `submissionId`'
 
             description %(
@@ -89,6 +93,7 @@ module BulkDataTestKit
           end
 
           test do
+            id :bulk_data_v400_submit_provider_submission_status
             title 'Received `submissionStatus` has a valid Coding'
 
             description %(
@@ -102,6 +107,7 @@ module BulkDataTestKit
           end
 
           test do
+            id :bulk_data_v400_submit_provider_manifest_url
             title 'Submission Provided optional `manifestUrl` with type `url`'
 
             description %(
@@ -125,6 +131,7 @@ module BulkDataTestKit
           end
 
           test do
+            id :bulk_data_v400_submit_provider_replaces_manifest_url
             title 'Submission Provided optional `replacesManifestUrl` with type `url`'
 
             description %(
@@ -149,6 +156,7 @@ module BulkDataTestKit
           end
 
           test do
+            id :bulk_data_v400_submit_provider_output_format
             title 'Submission Provided optional `outputFormat` with type `string`'
 
             description %(
@@ -173,6 +181,7 @@ module BulkDataTestKit
           end
 
           test do
+            id :bulk_data_v400_submit_provider_fhir_base_url
             title 'Submission Provided optional `fhirBaseUrl` with type `url`'
 
             description %(
@@ -196,6 +205,7 @@ module BulkDataTestKit
           end
 
           test do
+            id :bulk_data_v400_submit_provider_file_request_header
             title 'Submission Provided optional `fileRequestHeader` with type `part`'
 
             description %(
@@ -211,6 +221,7 @@ module BulkDataTestKit
           end
 
           test do
+            id :bulk_data_v400_submit_provider_oauth_metadata_url
             title 'Submission Provided optional `oauthMetadataUrl` with type `url`'
 
             description %(
@@ -235,6 +246,7 @@ module BulkDataTestKit
           end
 
           test do
+            id :bulk_data_v400_submit_provider_file_encryption_key
             title 'Submission Provided optional `fileEncryptionKey` with type `part`'
 
             description %(
@@ -250,6 +262,7 @@ module BulkDataTestKit
           end
 
           test do
+            id :bulk_data_v400_submit_provider_metadata
             title 'Submission Provided optional `metadata` with type `part`'
 
             description %(
@@ -265,6 +278,7 @@ module BulkDataTestKit
           end
 
           test do
+            id :bulk_data_v400_submit_provider_import
             title 'Submission Provided optional `import` with type `part`'
 
             description %(
@@ -280,6 +294,7 @@ module BulkDataTestKit
           end
 
           test do
+            id :bulk_data_v400_submit_provider_terminal_submission_order
             title 'No Requests Follow a Terminal Submission Status'
 
             description %(

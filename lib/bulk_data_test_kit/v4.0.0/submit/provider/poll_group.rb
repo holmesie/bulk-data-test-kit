@@ -18,6 +18,7 @@ module BulkDataTestKit
           optional
 
           test do
+            id :bulk_data_v400_submit_provider_poll_request
             title 'Poll Request Was Made'
 
             description %(
