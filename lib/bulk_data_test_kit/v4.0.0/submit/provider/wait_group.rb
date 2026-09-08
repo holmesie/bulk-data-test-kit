@@ -57,7 +57,8 @@ module BulkDataTestKit
                   to retrieve every completed submission.
 
                   The entire request sequence will be recorded and verified to check conformance to the
-                  [Bulk Data Access v4.0.0 Submit specification](https://build.fhir.org/ig/HL7/bulk-data/branches/argo25/en/submit.html).
+                  [Bulk Submit Operation](https://hl7.org/fhir/uv/bulkdata/4.0.0-202609-ballot/en/)
+                  within the Bulk Data Access v4.0.0 IG.
 
                   [Click here](#{resume_pass_url}?id=#{identifier}) when finished.
                 ),

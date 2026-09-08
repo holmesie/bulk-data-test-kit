@@ -1,5 +1,6 @@
-The Bulk Submit Data Consumer test suite validates a Data Consumer against
-the [Bulk Data Access v4.0.0 Submit specification](https://build.fhir.org/ig/HL7/bulk-data/branches/argo25/en/submit.html).
+The Bulk Submit Data Consumer test suite validates a Data Consumer
+implementation of the [Bulk Submit Operation](https://hl7.org/fhir/uv/bulkdata/4.0.0-202609-ballot/en/)
+within the Bulk Data Access v4.0.0 IG.
 
 ## Scope
 

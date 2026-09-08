@@ -19,8 +19,9 @@ This test kit is split into three different types of bulk data export:
 
 ## Bulk Submit Preview
 
-The test kit also includes preliminary suites for the
-[Bulk Data Access v4.0.0 Submit specification](https://build.fhir.org/ig/HL7/bulk-data/branches/argo25/en/submit.html):
+The test kit also includes preliminary suites for implementations of the
+[Bulk Submit Operation](https://hl7.org/fhir/uv/bulkdata/4.0.0-202609-ballot/en/)
+within the Bulk Data Access v4.0.0 IG:
 
 - **Data Provider**: Inferno simulates a Data Consumer while the system under
   test submits data and reports submission status.
