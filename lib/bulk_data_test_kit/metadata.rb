@@ -25,7 +25,8 @@ module BulkDataTestKit
         [STU1](http://hl7.org/fhir/uv/bulkdata/STU1.0.1/) and
         [STU2](http://hl7.org/fhir/uv/bulkdata/STU2/) versions of this
         implementation guide, along with preliminary Bulk Submit tests for
-        Data Provider and Data Consumer implementations of v4.0.0.
+        Data Provider and Data Consumer implementations of the
+        [v4.0.0 Bulk Submit specification](https://build.fhir.org/ig/HL7/bulk-data/branches/argo25/en/submit.html).
 
         <!-- break -->
 
